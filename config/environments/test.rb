@@ -44,6 +44,12 @@ Rails.application.configure do
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
 
+  config.active_job.queue_adapter = :test
+
+  # Rack::Attack fica desligado por padrão nos testes; ligado explicitamente
+  # só no teste de rate limiting (Task 8).
+  Rack::Attack.enabled = false
+
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
