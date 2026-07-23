@@ -1,0 +1,15 @@
+pt-BR:
+  activerecord:
+    attributes:
+      user:
+        name: "Nome"
+        email: "E-mail"
+        password: "Senha"
+    errors:
+      messages:
+        taken: "já está em uso"
+        blank: "não pode ficar em branco"
+        invalid: "não é válido"
+        too_short:
+          one: "é muito curta (mínimo de 1 caractere)"
+          other: "é muito curta (mínimo de %{count} caracteres)"
