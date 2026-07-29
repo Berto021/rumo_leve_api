@@ -139,6 +139,12 @@ class WeightEntriesTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test "rejects a non-numeric days param" do
+    get "/weight_entries/history", params: { days: "abc" }, headers: auth_headers(users(:alice))
+
+    assert_response :unprocessable_content
+  end
+
   test "returns chart points ascending for the requested period" do
     user = users(:alice)
     user.weight_entries.create!(weight: 82.0, recorded_on: 40.days.ago.to_date)

@@ -32,8 +32,8 @@ class WeightEntriesController < ApplicationController
   end
 
   def history
-    days = params[:days].presence&.to_i || 30
-    if days <= 0
+    days = Integer(params[:days].presence || 30, exception: false)
+    if days.nil? || days <= 0
       render json: { errors: ["days deve ser um número positivo"] }, status: :unprocessable_content
       return
     end
