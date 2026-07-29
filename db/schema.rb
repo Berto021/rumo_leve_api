@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_22_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_29_120000) do
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
@@ -20,4 +20,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_22_120000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  create_table "weight_entries", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.decimal "weight", precision: 5, scale: 2, null: false
+    t.date "recorded_on", null: false
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "recorded_on"], name: "index_weight_entries_on_user_id_and_recorded_on", unique: true
+    t.index ["user_id"], name: "index_weight_entries_on_user_id"
+  end
+
+  add_foreign_key "weight_entries", "users"
 end
