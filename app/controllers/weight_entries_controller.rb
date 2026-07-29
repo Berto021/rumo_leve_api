@@ -31,6 +31,30 @@ class WeightEntriesController < ApplicationController
     head :no_content
   end
 
+  def history
+    days = params[:days].presence&.to_i || 30
+    if days <= 0
+      render json: { errors: ["days deve ser um número positivo"] }, status: :unprocessable_content
+      return
+    end
+
+    since = Date.current - days.days
+    previous_weight = nil
+
+    annotated = current_user.weight_entries.order(:recorded_on).map do |entry|
+      variation = previous_weight && (entry.weight - previous_weight).round(2)
+      previous_weight = entry.weight
+      { entry: entry, variation: variation }
+    end
+
+    entries = annotated
+      .select { |item| item[:entry].recorded_on >= since }
+      .reverse
+      .map { |item| serialize(item[:entry]).merge(variation: item[:variation]&.to_f) }
+
+    render json: { entries: entries }, status: :ok
+  end
+
   private
 
   def serialize(entry)
