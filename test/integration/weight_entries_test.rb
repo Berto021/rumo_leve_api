@@ -138,4 +138,49 @@ class WeightEntriesTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
   end
+
+  test "returns chart points ascending for the requested period" do
+    user = users(:alice)
+    user.weight_entries.create!(weight: 82.0, recorded_on: 40.days.ago.to_date)
+    user.weight_entries.create!(weight: 80.0, recorded_on: 10.days.ago.to_date)
+    user.weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    get "/weight_entries/chart", params: { period: "30" }, headers: auth_headers(user)
+
+    assert_response :success
+    points = JSON.parse(response.body)["points"]
+    assert_equal 2, points.length
+    assert_equal 10.days.ago.to_date.to_s, points[0]["date"]
+    assert_equal Date.current.to_s, points[1]["date"]
+  end
+
+  test "returns every point when period is all" do
+    user = users(:alice)
+    user.weight_entries.create!(weight: 82.0, recorded_on: 100.days.ago.to_date)
+    user.weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    get "/weight_entries/chart", params: { period: "all" }, headers: auth_headers(user)
+
+    assert_response :success
+    assert_equal 2, JSON.parse(response.body)["points"].length
+  end
+
+  test "defaults to 30 days when period is omitted" do
+    user = users(:alice)
+    user.weight_entries.create!(weight: 82.0, recorded_on: 40.days.ago.to_date)
+    user.weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    get "/weight_entries/chart", headers: auth_headers(user)
+
+    assert_response :success
+    points = JSON.parse(response.body)["points"]
+    assert_equal 1, points.length
+    assert_equal Date.current.to_s, points[0]["date"]
+  end
+
+  test "rejects an invalid period" do
+    get "/weight_entries/chart", params: { period: "banana" }, headers: auth_headers(users(:alice))
+
+    assert_response :unprocessable_content
+  end
 end

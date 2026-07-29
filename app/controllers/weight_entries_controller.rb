@@ -55,6 +55,23 @@ class WeightEntriesController < ApplicationController
     render json: { entries: entries }, status: :ok
   end
 
+  def chart
+    period = params[:period].presence || "30"
+    scope = current_user.weight_entries.order(:recorded_on)
+
+    unless period == "all"
+      days = Integer(period, exception: false)
+      if days.nil? || days <= 0
+        render json: { errors: ["period deve ser 7, 30, 90 ou all"] }, status: :unprocessable_content
+        return
+      end
+      scope = scope.where("recorded_on >= ?", Date.current - days.days)
+    end
+
+    points = scope.map { |entry| { date: entry.recorded_on.to_s, weight: entry.weight.to_f } }
+    render json: { points: points }, status: :ok
+  end
+
   private
 
   def serialize(entry)
