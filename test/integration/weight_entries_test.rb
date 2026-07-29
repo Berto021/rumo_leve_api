@@ -44,4 +44,54 @@ class WeightEntriesTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     assert_includes JSON.parse(response.body)["errors"], "Peso deve ser maior que 0"
   end
+
+  test "updates an existing entry" do
+    user = users(:alice)
+    entry = user.weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    patch "/weight_entries/#{entry.id}", params: { weight: 77.0, note: "Ajuste" }, headers: auth_headers(user)
+
+    assert_response :success
+    body = JSON.parse(response.body)["weight_entry"]
+    assert_equal 77.0, body["weight"]
+    assert_equal "Ajuste", body["note"]
+  end
+
+  test "rejects an invalid update" do
+    user = users(:alice)
+    entry = user.weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    patch "/weight_entries/#{entry.id}", params: { weight: -5 }, headers: auth_headers(user)
+
+    assert_response :unprocessable_content
+    assert_includes JSON.parse(response.body)["errors"], "Peso deve ser maior que 0"
+  end
+
+  test "deletes an existing entry" do
+    user = users(:alice)
+    entry = user.weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    delete "/weight_entries/#{entry.id}", headers: auth_headers(user)
+
+    assert_response :no_content
+    assert_equal 0, user.weight_entries.count
+  end
+
+  test "returns not found when updating another user's entry" do
+    alice_entry = users(:alice).weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    patch "/weight_entries/#{alice_entry.id}", params: { weight: 60.0 }, headers: auth_headers(users(:bob))
+
+    assert_response :not_found
+    assert_equal 78.5, alice_entry.reload.weight
+  end
+
+  test "returns not found when deleting another user's entry" do
+    alice_entry = users(:alice).weight_entries.create!(weight: 78.5, recorded_on: Date.current)
+
+    delete "/weight_entries/#{alice_entry.id}", headers: auth_headers(users(:bob))
+
+    assert_response :not_found
+    assert alice_entry.reload.persisted?
+  end
 end

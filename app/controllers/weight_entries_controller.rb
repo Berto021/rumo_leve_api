@@ -12,6 +12,25 @@ class WeightEntriesController < ApplicationController
     end
   end
 
+  def update
+    entry = current_user.weight_entries.find(params[:id])
+    entry.recorded_on = params[:date] if params[:date].present?
+    entry.weight = params[:weight] if params[:weight].present?
+    entry.note = params[:note] if params.key?(:note)
+
+    if entry.save
+      render json: { weight_entry: serialize(entry) }, status: :ok
+    else
+      render json: { errors: entry.errors.full_messages }, status: :unprocessable_content
+    end
+  end
+
+  def destroy
+    entry = current_user.weight_entries.find(params[:id])
+    entry.destroy
+    head :no_content
+  end
+
   private
 
   def serialize(entry)
