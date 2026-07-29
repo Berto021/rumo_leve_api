@@ -17,3 +17,4 @@ pt-BR:
           one: "é muito curta (mínimo de 1 caractere)"
           other: "é muito curta (mínimo de %{count} caracteres)"
         greater_than: "deve ser maior que %{count}"
+        not_a_number: "não é um número"

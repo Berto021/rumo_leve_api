@@ -84,6 +84,7 @@ class WeightEntriesTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
     assert_equal 78.5, alice_entry.reload.weight
+    assert_equal "Registro não encontrado", JSON.parse(response.body)["error"]
   end
 
   test "returns not found when deleting another user's entry" do

@@ -1,7 +1,7 @@
 class WeightEntry < ApplicationRecord
   belongs_to :user
 
-  validates :weight, presence: true, numericality: { greater_than: 0 }
+  validates :weight, presence: true, numericality: { greater_than: 0, allow_nil: true }
   validates :recorded_on, presence: true
   validates :recorded_on, uniqueness: { scope: :user_id, message: "já possui um registro" }
   validate :recorded_on_cannot_be_in_the_future

@@ -12,13 +12,19 @@ class WeightEntryTest < ActiveSupport::TestCase
   test "requires a weight" do
     entry = build_entry(weight: nil)
     assert_not entry.valid?
-    assert_includes entry.errors.full_messages, "Peso não pode ficar em branco"
+    assert_equal ["Peso não pode ficar em branco"], entry.errors.full_messages
   end
 
   test "requires a positive weight" do
     entry = build_entry(weight: 0)
     assert_not entry.valid?
-    assert_includes entry.errors.full_messages, "Peso deve ser maior que 0"
+    assert_equal ["Peso deve ser maior que 0"], entry.errors.full_messages
+  end
+
+  test "rejects a non-numeric weight" do
+    entry = build_entry(weight: "abc")
+    assert_not entry.valid?
+    assert_equal ["Peso não é um número"], entry.errors.full_messages
   end
 
   test "requires recorded_on" do
