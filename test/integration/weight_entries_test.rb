@@ -140,7 +140,7 @@ class WeightEntriesTest < ActionDispatch::IntegrationTest
   end
 
   test "rejects a non-numeric days param" do
-    get "/weight_entries/history", params: { days: "abc" }, headers: auth_headers(users(:alice))
+    get "/weight_entries/history", params: { days: "7abc" }, headers: auth_headers(users(:alice))
 
     assert_response :unprocessable_content
   end
