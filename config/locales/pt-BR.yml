@@ -5,6 +5,9 @@ pt-BR:
         name: "Nome"
         email: "E-mail"
         password: "Senha"
+      weight_entry:
+        weight: "Peso"
+        recorded_on: "Data"
     errors:
       messages:
         taken: "já está em uso"
@@ -13,3 +16,5 @@ pt-BR:
         too_short:
           one: "é muito curta (mínimo de 1 caractere)"
           other: "é muito curta (mínimo de %{count} caracteres)"
+        greater_than: "deve ser maior que %{count}"
+        not_a_number: "não é um número"

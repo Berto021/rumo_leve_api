@@ -10,6 +10,13 @@ Rails.application.routes.draw do
   post "password_resets", to: "password_resets#create"
   patch "password_resets/:token", to: "password_resets#update"
 
+  resources :weight_entries, only: [:create, :update, :destroy] do
+    collection do
+      get :history
+      get :chart
+    end
+  end
+
   # Defines the root path route ("/")
   # root "posts#index"
 end

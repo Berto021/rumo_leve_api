@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
+  has_many :weight_entries, dependent: :destroy
 
   normalizes :email, with: ->(e) { e.strip.downcase }
 
